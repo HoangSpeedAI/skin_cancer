@@ -161,10 +161,10 @@ python src/main.py -c configs/efficientnet_b1_config.yaml -m test -mp experiment
 
 Here is the output from training the EfficientNet-B3 model:
 ```
-Accuracy: 0.8293
-Precision: 0.9570
-Recall: 0.8230
-F1 Score: 0.8849
+Accuracy: 0.9187
+Precision: 0.9403
+Recall: 0.9140
+F1 Score: 0.9270
 ```
 
 ## Evaluation
