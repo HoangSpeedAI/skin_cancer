@@ -1,5 +1,5 @@
 batch_size: 32
-num_epochs: 25
+num_epochs: 20
 learning_rate: 0.001
 data_path: "data"
 
@@ -7,6 +7,6 @@ input_size: 224
 input_channels: 3
 output_channels: 1
 
-architecture: "resnet50"
+architecture: "efficientnet_b1"
 scheduler: 'cyclic'
-step_size_up: 12
+step_size_up: 10

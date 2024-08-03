@@ -1,22 +1,31 @@
 import argparse
+import os
 import torch
 import torch.nn as nn
 import torch.optim as optim
 import yaml
-from datasets import get_dataloaders
+from datasets import get_dataloaders, visualize_dataset
 from model import get_model
 from train import train
-from evaluate import evaluate
+from test import test
+
 
 def parse_args():
-    parser = argparse.ArgumentParser(description='Train a PyTorch model.')
-    parser.add_argument('--config', type=str, default='configs/resnet18_config.yaml',
+    parser = argparse.ArgumentParser(description='Train or test a PyTorch model.')
+    parser.add_argument('--config', '-c', type=str,
+                        default='configs/resnet18_config.yaml',
                         help='Path to the config file')
+    parser.add_argument('--mode', '-m', type=str, choices=['train', 'test'], required=True,
+                        help='Mode to run: train or test')
+    parser.add_argument('--model-path', '-mp', type=str,
+                        help='Path to the model file for testing (required in test mode)')
     return parser.parse_args()
+
 
 def load_config(config_path):
     with open(config_path, 'r') as file:
         return yaml.safe_load(file)
+
 
 if __name__ == '__main__':
     # Parse command-line arguments
@@ -34,9 +43,14 @@ if __name__ == '__main__':
     output_channels = config['output_channels']
     architecture = config['architecture']
 
+    base_dir = 'experiments'
+
     # Get data loaders
-    train_loader, val_loader, test_loader, classes = get_dataloaders(batch_size,
-                                                                     data_path)
+    train_loader, val_loader, test_loader, classes = get_dataloaders(batch_size, data_path)
+    
+    # Visualize dataset samples
+    visualize_dataset(train_loader, classes, save_path='viz_train.png')
+    visualize_dataset(val_loader, classes, save_path='viz_val.png')
 
     # Initialize model
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -44,10 +58,20 @@ if __name__ == '__main__':
 
     # Loss and optimizer
     criterion = nn.BCEWithLogitsLoss()  # For binary classification
-    optimizer = optim.Adam(model.parameters(), lr=learning_rate)
+    optimizer = optim.Adam(
+        model.parameters(),
+        lr=learning_rate,
+        weight_decay=1e-4   # Set weight decay (L2 regularization)
+    )
 
-    # Train the model
-    train(model, train_loader, val_loader, criterion, optimizer, num_epochs, device)
+    if args.mode == 'train':
+        # Train the model
+        best_model_path = train(model, train_loader, val_loader, criterion, optimizer,
+                                num_epochs, device, architecture, base_dir, config)
 
-    # Evaluate the model
-    evaluate(model, test_loader, device)
+    elif args.mode == 'test':
+        # Ensure model path is provided
+        if not args.model_path:
+            raise ValueError("Model path must be specified in test mode.")
+        
+        test(model, args.model_path, test_loader, device)
