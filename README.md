@@ -172,12 +172,12 @@ F1 Score: 0.8849
 | Model                | Accuracy  | Precision  | Recall    | F1 Score  |
 |----------------------|-----------|------------|-----------|-----------|
 | Resnet18             | 0.8120    | **0.9561** | 0.8050    | 0.8740    |
-| Resnet50             | __0.8680__| 0.9420     | __0.8610__| __0.8997__|
+| Resnet50             | <u>0.8680</u>| 0.9420     | <u>0.8610</u>| <u>0.8997</u>|
 | EfficientNet-B1     | 0.8293    | 0.9570     | 0.8230    | 0.8849    |
 | **EfficientNet-B3**  | **0.9187**| 0.9403     | **0.9140**| **0.9270**|
 
 - **Best**: Highlighted in bold.
-- __Second Best__: Underlined.
+- <u>Second Best</u>: Underlined.
 
 ## Conclusion
 
